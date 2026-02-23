@@ -1,0 +1,69 @@
+<div class="page-container">
+  <div class="header-section">
+    <h2>Setting Criteria for: <span class="highlight">{{ topic }}</span></h2>
+    <p class="subtitle">What factors matter most to you? Add them below and rate their importance from 1 to 10.</p>
+
+    <button class="btn-ai" (click)="generateAICriteria()" [disabled]="isLoadingAI">
+      <span *ngIf="!isLoadingAI">Suggest AI Criteria</span>
+      <span *ngIf="isLoadingAI">AI is thinking...</span>
+    </button>
+  </div>
+
+  <div class="criteria-list">
+    <div class="criterion-row" *ngFor="let crit of criteria; let i = index">
+      <div class="input-group">
+        <label>Criterion Name</label>
+        <input type="text" [(ngModel)]="crit.name" placeholder="e.g., Price, Battery Life..." class="form-input">
+      </div>
+      <div class="input-group weight-group">
+        <label>Importance ({{ crit.weight }}/10)</label>
+        <input type="range" [(ngModel)]="crit.weight" min="1" max="10" class="form-slider">
+      </div>
+      <button class="btn-remove" (click)="removeCriterion(i)" title="Remove this criterion">✕</button>
+    </div>
+  </div>
+
+  <div class="actions-section">
+    <button class="btn-add" (click)="addCriterion()">+ Add Custom Criterion</button>
+  </div>
+
+  @if (products.length > 0) {
+    <div class="product-details-section">
+      <h3>Product details (AI)</h3>
+      <p class="subtitle">Get AI-generated details for each product based on your criteria.</p>
+      <button
+        class="btn-ai btn-product-details"
+        (click)="fetchProductDetails()"
+        [disabled]="isLoadingProductDetails || !hasValidCriteria"
+      >
+        <span *ngIf="!isLoadingProductDetails"> Fetch product details </span>
+        <span *ngIf="isLoadingProductDetails"> AI is researching...</span>
+      </button>
+
+      @if (productDetails.length > 0) {
+        <div class="product-details-grid">
+          @for (product of products; track product) {
+            <div class="product-card">
+              <h4>{{ product }}</h4>
+              @for (crit of criteria; track crit.name) {
+                @if (crit.name.trim()) {
+                  <div class="detail-row">
+                    <span class="criterion-label">{{ crit.name }}:</span>
+                    <span class="criterion-value">{{ getDetailForProduct(product, crit.name) }}</span>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <div class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
+
+  <div class="footer-section">
+    <button class="btn-secondary" routerLink="/products" [queryParams]="{ topic: topic }">← Back</button>
+    <button class="btn-primary" (click)="validateAndProceed()">Next: Score &amp; Compare →</button>
+  </div>
+</div>

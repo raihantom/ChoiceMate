@@ -1,0 +1,49 @@
+<div class="page-container">
+  <div class="header-section">
+    <h2>What are you considering?</h2>
+    <p class="subtitle">
+      Add the products or options you have in mind for
+      <span class="highlight">{{ topic }}</span>. You can add or remove items below.
+    </p>
+  </div>
+
+  <div class="add-product-form">
+    <div class="input-group">
+      <input
+        type="text"
+        [(ngModel)]="newProductName"
+        placeholder="e.g., Honda City, MacBook Pro..."
+        class="form-input"
+        (keyup.enter)="addProduct()"
+      >
+      <button class="btn-add-item" (click)="addProduct()">+ Add</button>
+    </div>
+  </div>
+
+  <div class="products-list" *ngIf="products.length > 0">
+    <div class="product-row" *ngFor="let product of products; let i = index">
+      <span class="product-name">{{ product }}</span>
+      <button
+        class="btn-remove"
+        (click)="removeProduct(i)"
+        title="Remove this product"
+      >✕</button>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="products.length === 0">
+    <p>No products added yet. Use the field above to add your options.</p>
+  </div>
+
+  <div class="error-msg" *ngIf="errorMessage">
+    ⚠️ {{ errorMessage }}
+  </div>
+
+  <div class="footer-section">
+    <button class="btn-secondary" routerLink="/">← Back</button>
+    <button class="btn-primary" (click)="validateAndProceed()">
+      Next: Define Criteria →
+    </button>
+  </div>
+</div>
+

@@ -1,0 +1,126 @@
+/* Container holding the background image */
+.hero-section {
+  position: relative;
+  /* Adjust height if you have a fixed navbar, e.g., calc(100vh - 70px) */
+  height: 90vh; 
+  width: 100%;
+  /* High-quality placeholder image representing paths/nodes */
+  background-image: radial-gradient(circle at center, rgba(20, 30, 48, 0.8) 0%, rgba(0, 0, 0, 1) 100%),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px, 20px 20px;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Overlay to darken the background image */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 23, 42, 0.75); /* Dark navy with 75% opacity */
+  z-index: 1;
+}
+
+/* Center the content and place it above the overlay */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #ffffff;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #cbd5e1; /* Soft gray for better readability */
+  margin-bottom: 3rem;
+  padding: 0 20px;
+}
+
+/* Input Area Styling */
+.decision-prompt {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px); /* Creates a modern "glassmorphism" effect */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.prompt-label {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.decision-input {
+  flex: 1;
+  max-width: 500px;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.decision-input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* Blue glow on focus */
+}
+
+.btn-start {
+  background-color: #3b82f6; /* Bright Blue */
+  color: white;
+  border: none;
+  padding: 0 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-start:hover {
+  background-color: #2563eb;
+}
+
+.btn-start:active {
+  transform: translateY(2px);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 600px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  .input-group {
+    flex-direction: column;
+  }
+  .btn-start {
+    padding: 1rem;
+    width: 100%;
+  }
+}

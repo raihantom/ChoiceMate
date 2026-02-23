@@ -1,0 +1,32 @@
+<div class="hero-section">
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <h1 class="hero-title">Your Intelligent Decision Companion.</h1>
+    
+    <p class="hero-description">
+      Welcome to DecideWise, your intelligent decision companion. 
+      Enter your options, define your criteria, and let our weighted-matrix system provide a transparent, 
+      data-driven recommendation for your toughest choices.
+    </p>
+
+    <div class="decision-prompt">
+      <label for="decisionInput" class="prompt-label">
+        What decision are you trying to make?
+      </label>
+      <div class="input-group">
+        <input 
+          type="text" 
+          id="decisionInput" 
+          class="decision-input" 
+          placeholder="e.g., Buying a new car, Choosing a tech stack..."
+          autocomplete="off"
+          [(ngModel)]="decisionTopic"
+          (keyup.enter)="startBuilding()"
+        >
+        <button class="btn-start" (click)="startBuilding()">Start Building</button>
+      </div>
+    </div>
+    
+  </div>
+</div>
