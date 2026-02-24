@@ -1,5 +1,14 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
+# Environment files (API keys)
+.env
+*.env
+.env.example
+*.env.example
+
+# Logs
+*.log
+
 # Compiled output
 /dist
 /tmp
