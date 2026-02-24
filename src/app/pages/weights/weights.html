@@ -1,1 +1,65 @@
-<p>weights works!</p>
+<div class="page-container">
+  <div class="header-section">
+    <h2>Score each option</h2>
+    <p class="subtitle">
+      Rate each product from 1–10 on every criterion for
+      <span class="highlight">{{ topic }}</span>. Higher = better fit.
+    </p>
+  </div>
+
+  <div class="matrix-container" *ngIf="products.length > 0 && criteria.length > 0">
+    <div class="ai-helper-row">
+      <button
+        class="btn-ai"
+        type="button"
+        (click)="generateAIScores()"
+        [disabled]="isLoadingAIScores"
+      >
+        {{ isLoadingAIScores ? 'Letting AI score your options…' : 'Let AI suggest scores' }}
+      </button>
+      <span class="ai-helper-text">
+        AI will pre-fill 1–10 scores for each product and criterion. You can still adjust them.
+      </span>
+    </div>
+    <div class="matrix-table-wrapper">
+      <table class="score-matrix">
+        <thead>
+          <tr>
+            <th class="corner-cell">Product</th>
+            <th *ngFor="let crit of criteria" class="criterion-header" [title]="'Weight: ' + crit.weight">
+              {{ crit.name }}
+              <span class="weight-badge">×{{ crit.weight }}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of products">
+            <td class="product-cell">{{ product }}</td>
+            <td *ngFor="let crit of criteria" class="score-cell">
+              <input
+                type="number"
+                min="1"
+                max="10"
+                [ngModel]="getScore(product, crit.name)"
+                (ngModelChange)="setScore(product, crit.name, $event)"
+                class="score-input"
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="products.length === 0 || criteria.length === 0">
+    <p>No products or criteria found. Start from the home page to build your decision.</p>
+    <a routerLink="/" class="link-home">← Back to Home</a>
+  </div>
+
+  <div class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
+
+  <div class="footer-section" *ngIf="products.length > 0 && criteria.length > 0">
+    <button class="btn-secondary" routerLink="/criteria" [queryParams]="{ topic: topic }">← Back</button>
+    <button class="btn-primary" (click)="validateAndProceed()">See Results →</button>
+  </div>
+</div>

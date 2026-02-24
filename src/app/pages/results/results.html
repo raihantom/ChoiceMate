@@ -1,1 +1,76 @@
-<p>results works!</p>
+<div class="page-container">
+  <div class="header-section">
+    <h2>Results: <span class="highlight">{{ topic }}</span></h2>
+    <p class="subtitle">Your ranked options based on the weighted scoring model.</p>
+  </div>
+
+  @if (rankedProducts.length > 0) {
+    <!-- Ranked list -->
+    <div class="rankings-section">
+      <h3>Rankings</h3>
+      <ol class="ranked-list">
+        @for (item of rankedProducts; track item.name) {
+          <li class="ranked-item" [class.winner]="item.rank === 1">
+            <div class="ranked-main">
+              <span class="rank-badge">#{{ item.rank }}</span>
+              <span class="product-name">{{ item.name }}</span>
+              <span class="weighted-score">{{ item.weightedScore }} pts</span>
+            </div>
+            <p class="rank-explanation">
+              {{ getRankExplanation(item) }}
+            </p>
+          </li>
+        }
+      </ol>
+    </div>
+
+    <!-- Scoring matrix -->
+    <div class="matrix-section">
+      <h3>Scoring matrix</h3>
+      <p class="matrix-caption">
+        Weighted score = Σ (criterion weight × rating) for each criterion
+      </p>
+      <div class="matrix-table-wrapper">
+        <table class="score-matrix">
+          <thead>
+            <tr>
+              <th class="corner-cell">Product</th>
+              @for (crit of criteria; track crit.name) {
+                <th class="criterion-header">
+                  {{ crit.name }}
+                  <span class="weight-badge">×{{ crit.weight }}</span>
+                </th>
+              }
+              <th class="total-header">Weighted score</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products; track product) {
+              <tr>
+                <td class="product-cell">{{ product }}</td>
+                @for (crit of criteria; track crit.name) {
+                  <td class="score-cell">{{ getScore(product, crit.name) }}</td>
+                }
+                <td class="total-cell">
+                  {{ getWeightedScore(product) }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <button class="btn-secondary" routerLink="/weights">← Adjust scores</button>
+      <button class="btn-primary" routerLink="/">Start new decision</button>
+    </div>
+  }
+
+  @if (rankedProducts.length === 0) {
+    <div class="empty-state">
+      <p>No results yet. Complete the scoring step first.</p>
+      <a routerLink="/weights" class="link-home">← Go to Scoring</a>
+    </div>
+  }
+</div>

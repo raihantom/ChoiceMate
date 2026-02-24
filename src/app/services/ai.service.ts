@@ -9,7 +9,6 @@ export interface Criterion {
 
 export interface ProductDetail {
   product: string;
-  name: string;
   byCriterion: Record<string, string>;
 }
 
@@ -21,16 +20,22 @@ export interface ProductDetailsResponse {
   details: ProductDetail[];
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+export interface SuggestScoresResponse {
+  scores: Record<string, Record<string, number>>;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AiService {
   private baseUrl = '/api';
+
   constructor(private http: HttpClient) {}
 
   suggestCriteria(topic: string, products: string[] = []): Observable<SuggestCriteriaResponse> {
-  return this.http.post<SuggestCriteriaResponse>(`${this.baseUrl}/suggest-criteria`, { topic, products }).pipe(catchError(this.handleError));
+    return this.http
+      .post<SuggestCriteriaResponse>(`${this.baseUrl}/suggest-criteria`, { topic, products })
+      .pipe(catchError(this.handleError));
   }
+
   getProductDetails(
     topic: string,
     products: string[],
@@ -44,6 +49,21 @@ export class AiService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  suggestScores(
+    topic: string,
+    products: string[],
+    criteria: Criterion[]
+  ): Observable<SuggestScoresResponse> {
+    return this.http
+      .post<SuggestScoresResponse>(`${this.baseUrl}/suggest-scores`, {
+        topic,
+        products,
+        criteria
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(err: { status?: number; error?: { error?: string }; message?: string }) {
     const msg =
       err?.error?.error ||
