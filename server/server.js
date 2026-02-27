@@ -117,6 +117,35 @@ Format:
   }
 }`;
 
+    // Helper to normalize the AI's byCriterion object to match our exact criterion names
+    function normalizeByCriterion(rawByCriterion, critNames) {
+      const result = {};
+      const source =
+        rawByCriterion && typeof rawByCriterion === 'object' ? rawByCriterion : {};
+
+      const entries = Object.entries(source);
+      for (const critName of critNames) {
+        const trimmedName = String(critName).trim();
+
+        // Prefer exact key match first
+        let value = source[trimmedName];
+
+        // If not found, try a case-insensitive match
+        if (value == null) {
+          const match = entries.find(
+            ([key]) => key.trim().toLowerCase() === trimmedName.toLowerCase()
+          );
+          if (match) {
+            value = match[1];
+          }
+        }
+
+        result[trimmedName] = typeof value === 'string' ? value : '';
+      }
+
+      return result;
+    }
+
     // Call Groq once per product to ensure we always get details for all products
     const detailResults = [];
     for (const product of products) {
@@ -151,8 +180,9 @@ Describe how this product relates to EACH criterion, returning JSON in the requi
       }
 
       detailResults.push({
-        product: parsed.product || product,
-        byCriterion: parsed.byCriterion || {}
+        // Always use the original product name from the client so it matches the UI
+        product,
+        byCriterion: normalizeByCriterion(parsed.byCriterion, critNames)
       });
     }
 

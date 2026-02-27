@@ -13,6 +13,11 @@ interface RankedProduct {
   rank: number;
 }
 
+interface ProductDetail {
+  product: string;
+  byCriterion: Record<string, string>;
+}
+
 @Component({
   selector: 'app-results',
   standalone: true,
@@ -26,12 +31,14 @@ export class Results {
   criteria: Criterion[] = [];
   scores: Record<string, Record<string, number>> = {};
   rankedProducts: RankedProduct[] = [];
+  productDetails: ProductDetail[] = [];
 
   ngOnInit() {
     this.topic = localStorage.getItem('decisionTopic') || 'Your Decision';
     const storedProducts = localStorage.getItem('decisionProducts');
     const storedCriteria = localStorage.getItem('decisionCriteria');
     const storedScores = localStorage.getItem('decisionScores');
+    const storedDetails = localStorage.getItem('decisionProductDetails');
 
     if (storedProducts) {
       try {
@@ -52,6 +59,14 @@ export class Results {
         this.scores = JSON.parse(storedScores);
       } catch {
         this.scores = {};
+      }
+    }
+
+    if (storedDetails) {
+      try {
+        this.productDetails = JSON.parse(storedDetails);
+      } catch {
+        this.productDetails = [];
       }
     }
 
@@ -76,6 +91,8 @@ export class Results {
       const score = this.getScore(item.name, crit.name);
       return {
         name: crit.name,
+        weight: crit.weight,
+        score,
         value: crit.weight * score,
       };
     });
@@ -87,17 +104,20 @@ export class Results {
       return `Ranked #${item.rank} based on your ratings across all criteria.`;
     }
 
-    const names = top.map(c => c.name);
-    let reason: string;
-    if (names.length === 1) {
-      reason = names[0];
-    } else if (names.length === 2) {
-      reason = `${names[0]} and ${names[1]}`;
-    } else {
-      reason = `${names[0]}, ${names[1]}, and ${names[2]}`;
-    }
+    const detailFor = (product: string, criterionName: string): string => {
+      const pd = this.productDetails.find(p => p.product === product);
+      return pd?.byCriterion?.[criterionName] ?? '';
+    };
 
-    return `Ranked #${item.rank} because it scored strongest on ${reason} given your weights.`;
+    const parts = top.map(c => {
+      const detail = detailFor(item.name, c.name);
+      const base = `${c.name} (${c.score}/10 with weight ${c.weight})`;
+      return detail ? `${base}: ${detail}` : base;
+    });
+
+    return `Ranked #${item.rank} because it performed best on ${parts.join(
+      '; '
+    )}. These are the criteria and key features that drove its score.`;
   }
 
   private computeRankedProducts(): RankedProduct[] {
