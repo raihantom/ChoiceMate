@@ -111,6 +111,7 @@ ChoiceMate is a small decision-support web app that helps you compare multiple o
 
 - Node.js (LTS recommended).
 - npm (comes with Node).
+- Angular CLI
 - A Groq API key.
 
 #### 1. Install dependencies
