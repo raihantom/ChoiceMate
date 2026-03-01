@@ -15,12 +15,21 @@ export class Products {
   products: string[] = [];
   newProductName: string = '';
   errorMessage: string = '';
+  budget: number | null = null;
 
   constructor(private router: Router, private route: ActivatedRoute) {}
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.topic = params['topic'] || 'Your Decision';
     });
+
+    const storedBudget = localStorage.getItem('decisionBudget');
+    if (storedBudget) {
+      const num = parseFloat(storedBudget);
+      if (Number.isFinite(num) && num > 0) {
+        this.budget = num;
+      }
+    }
   }
   addProduct() {
     const name = this.newProductName.trim();
@@ -46,6 +55,11 @@ export class Products {
     }
     localStorage.setItem('decisionTopic', this.topic);
     localStorage.setItem('decisionProducts', JSON.stringify(this.products));
+    if (this.budget != null && Number.isFinite(this.budget) && this.budget > 0) {
+      localStorage.setItem('decisionBudget', String(this.budget));
+    } else {
+      localStorage.removeItem('decisionBudget');
+    }
     this.router.navigate(['/criteria'], {
       queryParams: { topic: this.topic }
     });

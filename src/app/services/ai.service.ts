@@ -24,6 +24,15 @@ export interface SuggestScoresResponse {
   scores: Record<string, Record<string, number>>;
 }
 
+export interface AffordabilityInfo {
+  expensive: boolean;
+  reason: string;
+}
+
+export interface AffordabilityResponse {
+  affordability: Record<string, AffordabilityInfo>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AiService {
   private baseUrl = '/api';
@@ -60,6 +69,20 @@ export class AiService {
         topic,
         products,
         criteria
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  checkAffordability(
+    topic: string,
+    products: string[],
+    budget: number
+  ): Observable<AffordabilityResponse> {
+    return this.http
+      .post<AffordabilityResponse>(`${this.baseUrl}/check-affordability`, {
+        topic,
+        products,
+        budget
       })
       .pipe(catchError(this.handleError));
   }

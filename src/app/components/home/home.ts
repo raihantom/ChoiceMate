@@ -15,12 +15,23 @@ export class Home {
 
   constructor(private router: Router) {}
 
+  ngOnInit() {
+    const keys = [
+      'decisionTopic',
+      'decisionProducts',
+      'decisionCriteria',
+      'decisionScores',
+      'decisionProductDetails',
+      'decisionBudget',
+      'decisionAffordability'
+    ];
+    keys.forEach(k => localStorage.removeItem(k));
+  }
+
   startBuilding() {
     if (this.decisionTopic.trim()) {
-      // Navigate to products step with the decision topic
       this.router.navigate(['/products'], { queryParams: { topic: this.decisionTopic } });
-    }
-    else {
+    } else {
       alert('Please enter a decision topic to start building your decision tree.');
     }
   }

@@ -13,7 +13,12 @@
           <li class="ranked-item" [class.winner]="item.rank === 1">
             <div class="ranked-main">
               <span class="rank-badge">#{{ item.rank }}</span>
-              <span class="product-name">{{ item.name }}</span>
+              <span class="product-name">
+                {{ item.name }}
+                @if (budget !== null && affordability[item.name]?.expensive) {
+                  <span class="budget-flag">Above your budget</span>
+                }
+              </span>
               <span class="weighted-score">{{ item.weightedScore }} pts</span>
             </div>
             <p class="rank-explanation">

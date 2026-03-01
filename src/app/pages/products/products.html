@@ -7,6 +7,25 @@
     </p>
   </div>
 
+  <div class="budget-section">
+    <label class="budget-label">
+      Optional: What is your budget per option?
+    </label>
+    <div class="budget-input-row">
+      <div class="budget-input-wrapper">
+        <span class="budget-prefix">₹</span>
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="budget"
+          placeholder="e.g., 50000"
+          class="budget-input"
+        >
+      </div>
+      <span class="budget-hint">We'll use AI later to flag options that seem above this budget.</span>
+    </div>
+  </div>
+
   <div class="add-product-form">
     <div class="input-group">
       <input

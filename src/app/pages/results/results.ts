@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AiService, AffordabilityInfo } from '../../services/ai.service';
 
 interface Criterion {
   name: string;
@@ -32,6 +33,10 @@ export class Results {
   scores: Record<string, Record<string, number>> = {};
   rankedProducts: RankedProduct[] = [];
   productDetails: ProductDetail[] = [];
+  budget: number | null = null;
+  affordability: Record<string, AffordabilityInfo> = {};
+
+  constructor(private aiService: AiService) {}
 
   ngOnInit() {
     this.topic = localStorage.getItem('decisionTopic') || 'Your Decision';
@@ -39,6 +44,8 @@ export class Results {
     const storedCriteria = localStorage.getItem('decisionCriteria');
     const storedScores = localStorage.getItem('decisionScores');
     const storedDetails = localStorage.getItem('decisionProductDetails');
+    const storedBudget = localStorage.getItem('decisionBudget');
+    const storedAffordability = localStorage.getItem('decisionAffordability');
 
     if (storedProducts) {
       try {
@@ -70,7 +77,37 @@ export class Results {
       }
     }
 
+    if (storedBudget) {
+      const num = parseFloat(storedBudget);
+      if (Number.isFinite(num) && num > 0) {
+        this.budget = num;
+      }
+    }
+
+    if (storedAffordability) {
+      try {
+        this.affordability = JSON.parse(storedAffordability);
+      } catch {
+        this.affordability = {};
+      }
+    }
+
     this.rankedProducts = this.computeRankedProducts();
+
+    if (this.budget != null && this.products.length) {
+      this.aiService
+        .checkAffordability(this.topic, this.products, this.budget)
+        .subscribe({
+          next: res => {
+            this.affordability = res.affordability || {};
+            localStorage.setItem('decisionAffordability', JSON.stringify(this.affordability));
+            this.rankedProducts = this.computeRankedProducts();
+          },
+          error: () => {
+            // Fail silently for affordability errors; rankings will still be shown.
+          }
+        });
+    }
   }
 
   getScore(product: string, criterionName: string): number {
@@ -115,9 +152,19 @@ export class Results {
       return detail ? `${base}: ${detail}` : base;
     });
 
-    return `Ranked #${item.rank} because it performed best on ${parts.join(
+    const mainReason = `Ranked #${item.rank} because it performed best on ${parts.join(
       '; '
     )}. These are the criteria and key features that drove its score.`;
+
+    const affordabilityInfo = this.affordability[item.name];
+    if (this.budget != null && affordabilityInfo?.expensive) {
+      const extra =
+        affordabilityInfo.reason ||
+        'This option appears more expensive than your stated budget, so its overall score was slightly penalized.';
+      return `${mainReason} Note: ${extra}`;
+    }
+
+    return mainReason;
   }
 
   private computeRankedProducts(): RankedProduct[] {
@@ -129,6 +176,13 @@ export class Results {
         const score = this.getScore(product, crit.name);
         weightedScore += crit.weight * score;
       }
+
+      // Apply a gentle penalty if this product is considered above budget.
+      const isExpensive = this.affordability[product]?.expensive;
+      if (isExpensive) {
+        weightedScore *= 0.8;
+      }
+
       results.push({ name: product, weightedScore, rank: 0 });
     }
 
