@@ -36,10 +36,10 @@ export interface AffordabilityResponse {
 @Injectable({ providedIn: 'root' })
 export class AiService {
   private baseUrl =
-    typeof window !== 'undefined' &&
-    window.location.hostname.endsWith('vercel.app')
-      ? 'https://choicemate.onrender.com/api' // <-- put your Render URL here
-      : '/api'; 
+  typeof window !== 'undefined' &&
+  window.location.hostname.endsWith('vercel.app')
+    ? 'https://<your-render-service>.onrender.com/api'
+    : '/api'; 
 
   constructor(private http: HttpClient) {}
 
