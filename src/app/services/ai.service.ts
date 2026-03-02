@@ -38,7 +38,7 @@ export class AiService {
   private baseUrl =
   typeof window !== 'undefined' &&
   window.location.hostname.endsWith('vercel.app')
-    ? 'https://<your-render-service>.onrender.com/api'
+    ? 'https://choicemate.onrender.com/api'
     : '/api'; 
 
   constructor(private http: HttpClient) {}
